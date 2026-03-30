@@ -307,3 +307,211 @@ src/
 6. **相机聚焦**: 聚焦到机柜等子对象时，注意使用世界坐标计算相机位置
 7. **交互一致性**: 点击空白区应清空选中状态和详情面板，保持 UI 状态同步
 8. **UI 布局**: 状态图例等辅助信息应紧凑整合，避免独立面板占用过多空间
+
+## P0/P1 功能实现指南
+
+### 机柜详情面板 (P0)
+
+点击机柜显示详情面板：
+
+```typescript
+// useScene 中处理点击
+onRackClick: async (rack) => {
+  if (!rack) {
+    // 点击空白区，清空详情
+    setSelectedRackDetail?.(null)
+    return
+  }
+  const detail = await getRackDetail(rack.name)
+  setSelectedRackDetail?.(detail)
+}
+```
+
+### 机柜状态可视化 (P0)
+
+根据状态设置机柜颜色：
+
+```typescript
+// DataCenterManager
+setRackColor(rackName: string, status: RackStatus): void {
+  const colorMap = {
+    normal: 0x52c41a,   // 绿色 - 保持原色
+    warning: 0xfaad14,  // 黄色
+    critical: 0xf5222d, // 红色 + 闪烁动画
+  }
+  // 正常状态恢复原始颜色，异常状态变色
+  if (status === 'normal') {
+    this.resetRackColor(rackName)
+    return
+  }
+  // ... 设置颜色和闪烁动画
+}
+```
+
+### 温度热力图 (P1)
+
+在机柜顶部显示温度色块：
+
+```typescript
+// HeatmapManager
+addTemperatureIndicator(rack: THREE.Object3D, temperature: number): void {
+  const color = this.getTemperatureColor(temperature) // 蓝->绿->黄->红
+  const geometry = new THREE.PlaneGeometry(size.x * 0.8, size.z * 0.8)
+  const material = new THREE.MeshBasicMaterial({
+    color,
+    transparent: true,
+    opacity: 0.7,
+  })
+  // 放置在机柜顶部
+  mesh.rotation.x = -Math.PI / 2
+  mesh.position.set(center.x, box.max.y + 0.05, center.z)
+}
+```
+
+### 功耗可视化 (P1)
+
+在机柜旁显示功率负载条：
+
+```typescript
+// PowerVisualizer
+activate(racks: THREE.Object3D[], powerData: Map<string, PowerData>): void {
+  racks.forEach((rack) => {
+    const data = powerData.get(rack.name)
+    const loadRatio = data.power / data.maxPower
+    const color = this.getLoadColor(loadRatio) // 绿->黄->红
+    // 创建功率条
+    const geometry = new THREE.BoxGeometry(0.1, size.y * loadRatio, size.z * 0.8)
+    // 放置在机柜右侧
+  })
+}
+```
+
+### 可视化模式切换 (P1)
+
+实现模式切换控制器：
+
+```typescript
+// useScene 中
+const setVizMode = (mode: VizMode) => {
+  // 清理所有效果
+  hideTemperatureHeatmap()
+  hidePowerVisualization()
+
+  // 根据模式显示对应效果
+  if (mode === 'temperature') {
+    showTemperatureHeatmap()
+  } else if (mode === 'power') {
+    showPowerVisualization()
+  }
+}
+```
+
+### 悬浮面板 UI (P1)
+
+实现可收起/滑入的面板：
+
+```vue
+<!-- 左侧悬浮面板 - hover 展开 -->
+<div class="floating-panel left"
+     :class="{ expanded: isExpanded }"
+     @mouseenter="isExpanded = true"
+     @mouseleave="isExpanded = false">
+  <div class="panel-icon">📊</div>
+  <div class="panel-content">...</div>
+</div>
+
+<!-- 右侧详情面板 - 点击滑入 -->
+<transition name="slide-right">
+  <div v-if="selectedRack" class="floating-panel right">
+    <Panel title="机柜详情">...</Panel>
+  </div>
+</transition>
+```
+
+```css
+/* 悬浮面板样式 */
+.floating-panel {
+  position: absolute;
+  background: rgba(0, 34, 51, 0.8);
+  border: 1px solid rgba(153, 255, 254, 0.3);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+/* 滑入动画 */
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-right-enter-from,
+.slide-right-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
+```
+
+### 嵌套面板滚动层级控制 (P1)
+
+多层嵌套面板的滚动控制策略，确保只有特定区域滚动：
+
+```css
+/* 外层面板：不滚动，高度自适应 */
+.floating-panel.right {
+  position: absolute;
+  top: 70px;
+  right: 0.2rem;
+  width: 380px;
+  max-height: none; /* 不限制高度 */
+  overflow-y: visible; /* 不滚动 */
+}
+
+/* 内容容器：不滚动 */
+.floating-panel.right .panel-content {
+  max-height: none;
+  overflow-y: visible;
+}
+
+/* 详情面板：不滚动 */
+.rack-detail-panel {
+  /* 不设置高度限制 */
+}
+
+/* 服务器列表：唯一滚动区域 */
+.servers-list {
+  max-height: 200px; /* 固定高度 */
+  overflow-y: auto; /* 超出时滚动 */
+}
+
+.servers-list::-webkit-scrollbar {
+  width: 4px;
+}
+.servers-list::-webkit-scrollbar-thumb {
+  background: rgba(153, 255, 254, 0.5);
+  border-radius: 2px;
+}
+```
+
+**关键原则：**
+
+1. 外层容器 (`max-height: none, overflow-y: visible`) - 确保不被截断
+2. 内容区域不设置滚动 - 随内容自然伸展
+3. 只有特定列表区域设置 (`max-height + overflow-y: auto`) - 唯一滚动点
+4. 滚动条样式统一 - 保持视觉一致性
+
+### 告警闪烁动画 (P1)
+
+使用 GSAP 实现紧急状态闪烁：
+
+```typescript
+private startAlertAnimation(mesh: THREE.Mesh): void {
+  const material = mesh.material as THREE.MeshPhongMaterial
+  gsap.to(material, {
+    emissiveIntensity: 0.8,
+    duration: 0.5,
+    yoyo: true,
+    repeat: -1,
+    ease: 'power1.inOut',
+  })
+}
+```

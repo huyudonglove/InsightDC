@@ -44,16 +44,30 @@ defineExpose({
 <style scoped>
 .popover {
   position: absolute;
-  background-color: rgb(29 78 216 / 0.6);
-  border-radius: 5px;
-  font-size: 0.2rem;
+  background: rgba(0, 20, 40, 0.9);
+  border: 1px solid rgba(153, 255, 254, 0.4);
+  border-radius: 8px;
+  font-size: 14px;
   color: #fff;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(153, 255, 254, 0.1);
+  min-width: 140px;
+  z-index: 100;
+  pointer-events: none;
 }
+
 .popover-title {
-  padding: 12px;
-  border-bottom: 1px solid #fff;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #99fffe;
+  border-bottom: 1px solid rgba(153, 255, 254, 0.2);
+  letter-spacing: 1px;
 }
+
 .popover-content {
-  padding: 24px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
 }
 </style>

@@ -79,8 +79,8 @@ defineProps<Props>();
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.08rem;
   margin-bottom: 0.15rem;
 }
 
@@ -108,7 +108,7 @@ defineProps<Props>();
 }
 
 .stat-value {
-  font-size: 0.28rem;
+  font-size: 0.22rem;
   font-weight: bold;
   line-height: 1;
 }
@@ -130,9 +130,9 @@ defineProps<Props>();
 }
 
 .stat-label {
-  font-size: 0.14rem;
+  font-size: 0.12rem;
   color: rgba(255, 255, 255, 0.7);
-  margin-top: 0.05rem;
+  margin-top: 0.04rem;
 }
 
 .alert-banner {

@@ -2,8 +2,10 @@ import { ref, onMounted, onUnmounted, type Ref, shallowRef } from 'vue';
 import { SceneController } from '@/modules/SceneController';
 import { DataCenterManager, type RackInfo } from '@/modules/DataCenterManager';
 import { RackStatusManager } from '@/modules/RackStatusManager';
+import { HeatmapManager } from '@/modules/HeatmapManager';
+import { PowerVisualizer } from '@/modules/PowerVisualizer';
 import type { RackDetail } from '@/types/rack';
-import { getRackDetail } from '@/services/rackService';
+import { getRackDetail, getRackTemperature, getRackPower } from '@/services/rackService';
 
 export type VizMode = 'normal' | 'temperature' | 'power';
 
@@ -87,10 +89,20 @@ export function useScene(options: UseSceneOptions = {}): UseSceneReturn {
 
   // 创建状态管理器
   let statusManager: RackStatusManager | null = null;
+  
+  // 热力图管理器
+  let heatmapManager: HeatmapManager | null = null;
+  
+  // 功耗可视化管理器
+  let powerVisualizer: PowerVisualizer | null = null;
 
   onUnmounted(() => {
     statusManager?.stop();
     statusManager = null;
+    heatmapManager?.clear();
+    heatmapManager = null;
+    powerVisualizer?.deactivate();
+    powerVisualizer = null;
     manager = null;
     controller?.destroy();
     controller = null;
@@ -99,9 +111,74 @@ export function useScene(options: UseSceneOptions = {}): UseSceneReturn {
   // 可视化模式
   const currentMode = ref<VizMode>('normal');
 
+  // 显示温度热力图
+  const showTemperatureHeatmap = async () => {
+    if (!manager) return;
+    
+    const scene = manager.getScene();
+    if (!scene) return;
+    
+    // 创建热力图管理器
+    if (!heatmapManager) {
+      heatmapManager = new HeatmapManager(scene);
+    }
+    
+    // 获取所有机柜并添加温度指示器
+    const racks = manager.getRackList();
+    for (const rack of racks) {
+      const temperature = await getRackTemperature(rack.name);
+      heatmapManager.addTemperatureIndicator(rack, temperature);
+    }
+  };
+  
+  // 隐藏热力图
+  const hideTemperatureHeatmap = () => {
+    heatmapManager?.clear();
+  };
+  
+  // 显示功耗可视化
+  const showPowerVisualization = async () => {
+    if (!manager) return;
+    
+    const scene = manager.getScene();
+    if (!scene) return;
+    
+    // 创建功耗可视化管理器
+    if (!powerVisualizer) {
+      powerVisualizer = new PowerVisualizer(scene);
+    }
+    
+    // 获取所有机柜的功率数据
+    const racks = manager.getRackList();
+    const powerData = new Map();
+    
+    for (const rack of racks) {
+      const { power, maxPower } = await getRackPower(rack.name);
+      powerData.set(rack.name, { rackName: rack.name, power, maxPower });
+    }
+    
+    powerVisualizer.activate(racks, powerData);
+  };
+  
+  // 隐藏功耗可视化
+  const hidePowerVisualization = () => {
+    powerVisualizer?.deactivate();
+  };
+
   const setVizMode = (mode: VizMode) => {
     currentMode.value = mode;
-    // TODO: 切换热力图/功耗可视化
+    
+    // 先清理所有可视化效果
+    hideTemperatureHeatmap();
+    hidePowerVisualization();
+    
+    // 根据模式显示对应效果
+    if (mode === 'temperature') {
+      showTemperatureHeatmap();
+    } else if (mode === 'power') {
+      showPowerVisualization();
+    }
+    
     console.log('切换可视化模式:', mode);
   };
 

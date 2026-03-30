@@ -49,8 +49,8 @@ export class HeatmapManager {
     this.scene.add(mesh);
     this.heatmapMeshes.set(rack.name, mesh);
 
-    // 添加温度文字
-    this.addTemperatureLabel(rack, temperature, center, box.max.y + 0.1);
+    // 不显示温度文字，避免层叠
+    // this.addTemperatureLabel(rack, temperature, center, box.max.y + 0.1);
   }
 
   /**

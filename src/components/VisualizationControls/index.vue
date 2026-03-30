@@ -29,6 +29,11 @@
     <div class="mode-description">
       {{ modeDescription }}
     </div>
+    
+    <!-- 切换反馈提示 -->
+    <div v-if="showFeedback" class="mode-feedback">
+      {{ feedbackText }}
+    </div>
   </div>
 </template>
 
@@ -38,6 +43,8 @@ import { ref, computed } from 'vue';
 type VizMode = 'normal' | 'temperature' | 'power';
 
 const currentMode = ref<VizMode>('normal');
+const showFeedback = ref(false);
+const feedbackText = ref('');
 
 const modeDescriptions: Record<VizMode, string> = {
   normal: '显示机柜运行状态：正常、警告、紧急',
@@ -54,6 +61,18 @@ const emit = defineEmits<{
 const setMode = (mode: VizMode) => {
   currentMode.value = mode;
   emit('modeChange', mode);
+  
+  // 显示切换反馈
+  const modeNames: Record<VizMode, string> = {
+    normal: '状态视图',
+    temperature: '温度热力',
+    power: '功耗视图',
+  };
+  feedbackText.value = `已切换到：${modeNames[mode]}`;
+  showFeedback.value = true;
+  setTimeout(() => {
+    showFeedback.value = false;
+  }, 1500);
 };
 </script>
 
@@ -118,5 +137,36 @@ const setMode = (mode: VizMode) => {
   font-size: 0.13rem;
   color: rgba(255, 255, 255, 0.6);
   line-height: 1.4;
+}
+
+.mode-feedback {
+  margin-top: 0.1rem;
+  padding: 0.08rem 0.12rem;
+  background: rgba(82, 196, 26, 0.3);
+  border: 1px solid rgba(82, 196, 26, 0.5);
+  border-radius: 0.06rem;
+  font-size: 0.13rem;
+  color: #52c41a;
+  text-align: center;
+  animation: fadeInOut 1.5s ease;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
 }
 </style>

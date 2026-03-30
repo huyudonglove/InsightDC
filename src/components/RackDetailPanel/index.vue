@@ -129,7 +129,6 @@ const serverStatusText = (status: keyof typeof serverStatusTextMap) => {
 
 <style scoped>
 .rack-detail-panel {
-  height: 100%;
   color: #fff;
   font-size: 0.18rem;
 }
@@ -153,9 +152,8 @@ const serverStatusText = (status: keyof typeof serverStatusTextMap) => {
 }
 
 .detail-content {
-  height: 100%;
-  max-height: calc(100vh - 150px);
-  overflow-y: auto;
+  height: auto;
+  overflow-y: visible;
   padding-right: 0.1rem;
 }
 
@@ -179,25 +177,6 @@ const serverStatusText = (status: keyof typeof serverStatusTextMap) => {
 .update-value {
   font-size: 0.14rem;
   color: rgba(255, 255, 255, 0.8);
-}
-
-/* 自定义滚动条样式 */
-.detail-content::-webkit-scrollbar {
-  width: 4px;
-}
-
-.detail-content::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
-}
-
-.detail-content::-webkit-scrollbar-thumb {
-  background: rgba(153, 255, 254, 0.5);
-  border-radius: 2px;
-}
-
-.detail-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(153, 255, 254, 0.8);
 }
 
 .panel-header {
@@ -296,21 +275,24 @@ const serverStatusText = (status: keyof typeof serverStatusTextMap) => {
 
 .servers-section {
   margin-bottom: 0.2rem;
-  max-height: 40vh;
+}
+
+.servers-list {
+  max-height: 200px;
   overflow-y: auto;
 }
 
 /* 服务器列表滚动条 */
-.servers-section::-webkit-scrollbar {
+.servers-list::-webkit-scrollbar {
   width: 4px;
 }
 
-.servers-section::-webkit-scrollbar-track {
+.servers-list::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
 }
 
-.servers-section::-webkit-scrollbar-thumb {
+.servers-list::-webkit-scrollbar-thumb {
   background: rgba(153, 255, 254, 0.5);
   border-radius: 2px;
 }

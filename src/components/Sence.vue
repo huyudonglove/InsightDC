@@ -9,10 +9,14 @@
 </template>
 
 <script lang="ts" setup name="Sence">
-import { ref, inject } from 'vue';
-import { useScene } from '@/hooks/useScene';
+import { ref, inject, watch } from 'vue';
+import { useScene, type VizMode } from '@/hooks/useScene';
 import Popover from './Popover/index.vue';
 import type { RackDetail } from '@/types/rack';
+
+const props = defineProps<{
+  vizMode?: VizMode;
+}>();
 
 const popoverRef = ref<InstanceType<typeof Popover> | null>(null);
 const popoverTop = ref(0);
@@ -27,7 +31,7 @@ const emit = defineEmits<{
   statsUpdate: [stats: { total: number; normal: number; warning: number; critical: number }];
 }>();
 
-const { containerRef, resetCamera } = useScene({
+const { containerRef, resetCamera, setVizMode } = useScene({
   onRackHover: (rack, mouseEvent) => {
     if (rack && mouseEvent) {
       popoverData.value = { name: rack.name };
@@ -52,6 +56,14 @@ const { containerRef, resetCamera } = useScene({
     emit('statsUpdate', stats);
   },
 });
+
+// 监听可视化模式变化
+watch(() => props.vizMode, (newMode) => {
+  if (newMode) {
+    console.log('Sence 收到模式切换:', newMode);
+    setVizMode(newMode);
+  }
+}, { immediate: true });
 
 // 监听鼠标离开 3D 容器，关闭 Popover
 const handleMouseLeave = () => {

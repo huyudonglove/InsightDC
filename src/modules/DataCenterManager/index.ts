@@ -415,6 +415,13 @@ export class DataCenterManager {
   }
 
   /**
+   * 获取场景对象
+   */
+  getScene(): THREE.Scene | null {
+    return this.controller['viewer']?.['scene'] || null;
+  }
+
+  /**
    * 获取所有机柜信息（带状态）
    */
   getRackInfos(): RackInfo[] {

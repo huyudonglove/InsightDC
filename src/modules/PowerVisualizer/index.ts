@@ -83,8 +83,8 @@ export class PowerVisualizer {
     this.scene.add(mesh);
     this.powerBars.set(rack.name, mesh);
 
-    // 添加功率文字
-    this.addPowerLabel(rack, data, box.max.x + 0.5, box.max.y + 0.3, center.z);
+    // 不显示功率文字，避免层叠
+    // this.addPowerLabel(rack, data, box.max.x + 0.5, box.max.y + 0.3, center.z);
   }
 
   /**
