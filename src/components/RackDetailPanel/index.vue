@@ -278,7 +278,7 @@ const serverStatusText = (status: keyof typeof serverStatusTextMap) => {
 }
 
 .servers-list {
-  max-height: 200px;
+  max-height: min(180px, 18vh);
   overflow-y: auto;
 }
 

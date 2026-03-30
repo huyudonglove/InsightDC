@@ -499,6 +499,52 @@ const setVizMode = (mode: VizMode) => {
 3. 只有特定列表区域设置 (`max-height + overflow-y: auto`) - 唯一滚动点
 4. 滚动条样式统一 - 保持视觉一致性
 
+### 多分辨率适配方案 (rem)
+
+项目采用 **1rem = 100px**（以 1920px 设计稿为基准）的适配方案：
+
+```css
+/* 根字体设置 */
+html {
+  font-size: calc(100vw / 19.2);
+}
+
+/* 限制最小/最大字体 */
+@media (max-width: 1200px) {
+  html {
+    font-size: 62.5px;
+  }
+}
+@media (min-width: 2560px) {
+  html {
+    font-size: 133.33px;
+  }
+}
+```
+
+**设计稿转换规则：**
+
+- 设计稿 100px → 代码 1rem
+- 设计稿 16px → 代码 0.16rem
+- 设计稿 280px → 代码 2.8rem
+
+**布局示例：**
+
+```css
+.floating-panel.right {
+  top: 1.1rem; /* 110px */
+  width: 3.8rem; /* 380px */
+  padding: 0.15rem; /* 15px */
+}
+```
+
+**适配效果：**
+| 分辨率 | 1rem 实际值 | 面板宽度 (3.8rem) |
+|--------|------------|------------------|
+| 1080p | 56.25px | 214px |
+| 1920px | 100px | 380px |
+| 2K | 133.33px | 507px |
+
 ### 告警闪烁动画 (P1)
 
 使用 GSAP 实现紧急状态闪烁：

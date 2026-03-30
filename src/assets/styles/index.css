@@ -3,6 +3,25 @@
   src: url('../fonts/DingTalkJinBuTi.woff2');
 }
 
+/* 根字体大小：以 1920px 为基准，1rem = 100px */
+html {
+  font-size: calc(100vw / 19.2);
+}
+
+/* 小屏幕限制最小字体 */
+@media (max-width: 1200px) {
+  html {
+    font-size: 62.5px; /* 1200 / 19.2 = 62.5 */
+  }
+}
+
+/* 大屏幕限制最大字体 */
+@media (min-width: 2560px) {
+  html {
+    font-size: 133.33px; /* 2560 / 19.2 = 133.33 */
+  }
+}
+
 * {
   padding: 0;
   margin: 0;

@@ -136,21 +136,21 @@ const onVizModeChange = (mode: 'normal' | 'temperature' | 'power') => {
 .left-panels {
   position: absolute;
   left: 0.2rem;
-  top: 70px;
+  top: 1.1rem;
   z-index: 10;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 0.15rem;
 }
 
 /* 常驻面板 */
 .panel-section.always-visible {
-  width: 280px;
+  width: 2.8rem;
   background: rgba(0, 34, 51, 0.8);
   border: 1px solid rgba(153, 255, 254, 0.3);
-  border-radius: 8px;
+  border-radius: 0.08rem;
   backdrop-filter: blur(10px);
-  padding: 15px;
+  padding: 0.15rem;
 }
 
 /* 悬浮面板基础样式 */
@@ -160,19 +160,19 @@ const onVizModeChange = (mode: 'normal' | 'temperature' | 'power') => {
 
 /* 可收起的左侧面板 */
 .floating-panel.left {
-  width: 60px;
-  height: 60px;
+  width: 0.6rem;
+  height: 0.6rem;
   background: rgba(0, 34, 51, 0.8);
   border: 1px solid rgba(153, 255, 254, 0.3);
-  border-radius: 8px;
+  border-radius: 0.08rem;
   backdrop-filter: blur(10px);
   overflow: hidden;
 }
 
 .floating-panel.left.expanded {
-  width: 280px;
+  width: 2.8rem;
   height: auto;
-  max-height: calc(100vh - 300px);
+  max-height: calc(100vh - 3rem);
   overflow-y: auto;
 }
 
@@ -182,26 +182,26 @@ const onVizModeChange = (mode: 'normal' | 'temperature' | 'power') => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
+  width: 0.6rem;
+  height: 0.6rem;
   cursor: pointer;
 }
 
 .panel-icon .icon-svg {
-  width: 24px;
-  height: 24px;
+  width: 0.24rem;
+  height: 0.24rem;
   color: #99fffe;
-  margin-bottom: 4px;
+  margin-bottom: 0.04rem;
 }
 
 .panel-icon .hint {
-  font-size: 12px;
+  font-size: 0.12rem;
   color: rgba(255, 255, 255, 0.6);
 }
 
 /* 面板内容 */
 .panel-content {
-  padding: 15px;
+  padding: 0.15rem;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -217,23 +217,21 @@ const onVizModeChange = (mode: 'normal' | 'temperature' | 'power') => {
 /* 右侧面板 */
 .floating-panel.right {
   position: absolute;
-  top: 70px;
+  top: 1.1rem;
   right: 0.2rem;
-  width: 380px;
-  max-height: none;
-  overflow-y: visible;
+  width: 3.8rem;
+  max-height: calc(100vh - 1.3rem);
+  overflow-y: auto;
   z-index: 10;
 }
 
 .floating-panel.right .panel-content {
   opacity: 1;
-  padding: 15px;
+  padding: 0.15rem;
   background: rgba(0, 34, 51, 0.8);
   border: 1px solid rgba(153, 255, 254, 0.3);
-  border-radius: 8px;
+  border-radius: 0.08rem;
   backdrop-filter: blur(10px);
-  max-height: none;
-  overflow-y: visible;
 }
 
 /* 滑入动画 */
